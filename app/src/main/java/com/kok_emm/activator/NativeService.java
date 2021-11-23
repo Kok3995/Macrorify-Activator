@@ -28,7 +28,10 @@ public class NativeService {
         if (resourceId == 0)
             throw new Exception("Invalid Resource");
 
-        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(context.getFilesDir(), "minitouch")); InputStream is = context.getResources().openRawResource(resourceId)) {
+        File path = new File(context.getFilesDir(), "minitouch");
+        path.createNewFile();
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(path); InputStream is = context.getResources().openRawResource(resourceId)) {
             byte[] buffer = new byte[8 * 1024];
             int bytesRead;
             while ((bytesRead = is.read(buffer)) != -1) {
@@ -36,7 +39,7 @@ public class NativeService {
             }
         }
 
-        execCmd(new String[] { "cp -r" + new File(context.getFilesDir(), "minitouch").getAbsolutePath() + " /data/local/tmp/minitouch", "chmod 777 /data/local/tmp/minitouch", "/data/local/tmp/minitouch" }, 1000);
+        execCmd(new String[] { "cp -r " + path.getAbsolutePath() + " /data/local/tmp/minitouch", "chmod 777 /data/local/tmp/minitouch", "/data/local/tmp/minitouch" }, 1000);
     }
 
     public void stop() {
